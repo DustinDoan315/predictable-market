@@ -36,7 +36,7 @@ const BetCard: React.FC<BetCardProps> = ({
 
   return (
     <div
-      className="max-w-screen-md rounded-lg shadow-lg m-4 p-3"
+      className="max-w-screen-md rounded-lg shadow-lg m-1 p-3"
       style={{
         backgroundColor: "rgb(44,62,79)",
       }}>
@@ -50,13 +50,13 @@ const BetCard: React.FC<BetCardProps> = ({
 
         {/* Card Content */}
         <Link href="/" className="flex-grow px-2">
-          <p className="text-xl font-semibold text-white hover:underline">
+          <p className="text-lg sm:text-xl md:text-2xl font-semibold text-white hover:underline line-clamp-2">
             {description}
           </p>
         </Link>
 
         {/* Progress Bar */}
-        <div className="w-10 h-10 flex justify-center items-center">
+        <div className="justify-center items-center">
           <HalfCycleProgressBar progress={progress} />
         </div>
       </div>

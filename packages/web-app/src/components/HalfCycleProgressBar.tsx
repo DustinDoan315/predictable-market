@@ -12,12 +12,14 @@ const HalfCycleProgressBar: React.FC<HalfCycleProgressBarProps> = ({
   const circunference = Math.PI * radius;
   const offset = ((100 - progress) / 100) * circunference;
 
+  // Calculate size based on screen size or container width
+  const svgWidth = "100%"; // full width of the container
+  const svgHeight = "auto"; // adjust height proportionally
+
   return (
-    <div className="flex justify-center items-center">
+    <div className="relative flex justify-center items-center w-full max-w-[120px]">
       <svg
-        className="transform rotate-0"
-        width="70"
-        height="40"
+        style={{ width: svgWidth, height: svgHeight }}
         viewBox="0 0 120 60"
         xmlns="http://www.w3.org/2000/svg">
         {/* Background Circle */}
@@ -43,9 +45,12 @@ const HalfCycleProgressBar: React.FC<HalfCycleProgressBarProps> = ({
           transform="rotate(180 60 60)"
         />
       </svg>
-      <div className="absolute flex flex-col items-center text-white font-bold text-md mt-10">
-        <div>{progress}%</div>
-        <div className="text-gray-400 text-xs">chance</div>
+      <div className="absolute flex flex-col items-center text-white font-bold mt-14 sm:mt-10">
+        {/* Progress Percentage */}
+        <div className="text-xs sm:text-sm md:text-xl">{progress}%</div>
+
+        {/* Chance Label */}
+        <div className="text-gray-400 text-xs sm:text-xs">chance</div>
       </div>
     </div>
   );

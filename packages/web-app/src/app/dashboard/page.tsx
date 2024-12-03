@@ -4,33 +4,39 @@
 // import Transactions from "@/components/Transactions";
 // import NetworkSwitcher from "@/components/NetworkSwitcher";
 import BetCard from "@/components/BetCard";
+import { mockBets } from "@/utils/mock";
 
 export default function DashboardPage() {
-  const handleBetYes = () => {
-    alert("You placed a Yes bet!");
+  const handleBetYes = (id: number) => {
+    console.log(`Bet Yes on item ${id}`);
   };
 
-  const handleBetNo = () => {
-    alert("You placed a No bet!");
+  const handleBetNo = (id: number) => {
+    console.log(`Bet No on item ${id}`);
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <div className="col-span-1">
-        <BetCard
-          image="/btc100k.webp"
-          description="Will bitcoin hit 100k in 2024?"
-          onBetYes={handleBetYes}
-          onBetNo={handleBetNo}
-        />
-      </div>
-      {/* <div className="col-span-1">
+    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+      {mockBets.map((bet) => (
+        <div key={bet.id} className="col-span-1">
+          <BetCard
+            image={bet.image}
+            description={bet.description}
+            onBetYes={() => handleBetYes(bet.id)}
+            onBetNo={() => handleBetNo(bet.id)}
+          />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+{
+  /* <div className="col-span-1">
         <WalletSummary />
       </div>
       <div className="col-span-2">
         <NetworkSwitcher />
         <Transactions />
-      </div> */}
-    </div>
-  );
+      </div> */
 }
