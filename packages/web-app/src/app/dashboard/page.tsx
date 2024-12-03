@@ -19,7 +19,7 @@ export default function DashboardPage() {
       <div className="col-span-1">
         <BetCard
           image="/btc100k.webp"
-          description="will bitcoin hit 100k in 2024?"
+          description="Will bitcoin hit 100k in 2024?"
           onBetYes={handleBetYes}
           onBetNo={handleBetNo}
         />

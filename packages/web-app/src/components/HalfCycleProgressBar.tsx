@@ -16,8 +16,8 @@ const HalfCycleProgressBar: React.FC<HalfCycleProgressBarProps> = ({
     <div className="flex justify-center items-center">
       <svg
         className="transform rotate-0"
-        width="50"
-        height="25"
+        width="70"
+        height="40"
         viewBox="0 0 120 60"
         xmlns="http://www.w3.org/2000/svg">
         {/* Background Circle */}
@@ -34,7 +34,7 @@ const HalfCycleProgressBar: React.FC<HalfCycleProgressBarProps> = ({
           cx="60"
           cy="60"
           r={radius}
-          stroke="blue"
+          stroke="rgba(36,174,96,1)"
           strokeWidth={strokeWidth}
           fill="none"
           strokeDasharray={circunference}
@@ -43,7 +43,10 @@ const HalfCycleProgressBar: React.FC<HalfCycleProgressBarProps> = ({
           transform="rotate(180 60 60)"
         />
       </svg>
-      <div className="absolute text-black text-sm mt-4">{progress}% </div>
+      <div className="absolute flex flex-col items-center text-white font-bold text-md mt-10">
+        <div>{progress}%</div>
+        <div className="text-gray-400 text-xs">chance</div>
+      </div>
     </div>
   );
 };
