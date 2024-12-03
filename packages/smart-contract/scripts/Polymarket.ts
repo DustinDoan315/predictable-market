@@ -15,7 +15,7 @@ async function main() {
   const tokenAddress = "0x425eea9d65f20ce7FB56D810F8fD2697c717879a";
 
   const contract = await contractFactory.deploy(tokenAddress, {
-    gasLimit: 1000000,
+    gasLimit: "0x1000000",
   });
 
   console.log("Contract deployed at: ", contract);
