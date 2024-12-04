@@ -3,21 +3,24 @@
 // import WalletSummary from "@/components/WalletSummary";
 // import Transactions from "@/components/Transactions";
 // import NetworkSwitcher from "@/components/NetworkSwitcher";
-import BetCard from "@/components/BetCard";
-import { mockBets } from "@/utils/mock";
+// import BetCard from "@/components/BetCard";
+// import { mockBets } from "@/utils/mock";
+import BetForm from "@/components/BetForm";
 
 export default function DashboardPage() {
-  const handleBetYes = (id: number) => {
-    console.log(`Bet Yes on item ${id}`);
-  };
+  // const handleBetYes = (id: number) => {
+  //   console.log(`Bet Yes on item ${id}`);
+  // };
 
-  const handleBetNo = (id: number) => {
-    console.log(`Bet No on item ${id}`);
-  };
+  // const handleBetNo = (id: number) => {
+  //   console.log(`Bet No on item ${id}`);
+  // };
 
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-      {mockBets.map((bet) => (
+      <BetForm />
+
+      {/* {mockBets.map((bet) => (
         <div key={bet.id} className="col-span-1">
           <BetCard
             image={bet.image}
@@ -26,7 +29,7 @@ export default function DashboardPage() {
             onBetNo={() => handleBetNo(bet.id)}
           />
         </div>
-      ))}
+      ))} */}
     </div>
   );
 }
