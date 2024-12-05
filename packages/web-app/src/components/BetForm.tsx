@@ -2,18 +2,19 @@
 "use client";
 import { useState } from "react";
 import { useBet } from "@/hooks/useBet";
+import SubmitButtonComponent from "./SubmitButtonComponent";
 
 const BetForm: React.FC = () => {
   const [marketId, setMarketId] = useState<string>("");
   const [betAmount, setBetAmount] = useState<string>("");
   const [userAddress, setUserAddress] = useState<string>("");
 
-  const { isLoading, error, success, placeBetYes } = useBet();
+  const { isLoading, errorMessage, successMessage, placeYesBet } = useBet();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
     try {
-      await placeBetYes(marketId, betAmount, userAddress);
+      console.log("closePopup called");
+      await placeYesBet(marketId, betAmount, userAddress);
     } catch (err) {
       console.error("Error placing bet:", err);
     }
@@ -27,11 +28,7 @@ const BetForm: React.FC = () => {
       return;
     }
 
-    try {
-      setBetAmount(value);
-    } catch (error) {
-      console.error("Error parsing input to wei:", error);
-    }
+    setBetAmount(value);
   };
 
   return (
@@ -41,7 +38,7 @@ const BetForm: React.FC = () => {
           Place Bet on Market
         </h1>
 
-        <form onSubmit={handleSubmit} className="mt-4">
+        <form className="mt-4">
           {/* Market ID */}
           <div className="mb-4">
             <label
@@ -64,7 +61,7 @@ const BetForm: React.FC = () => {
           <div className="mb-4">
             <label
               htmlFor="betAmount"
-              className="block text-sm font-medium text-black">
+              className="block text-sm font-medium text-gray-700">
               Bet Amount (ETH)
             </label>
             <input
@@ -97,16 +94,12 @@ const BetForm: React.FC = () => {
           </div>
 
           {/* Submit Button */}
-          <button
-            type="submit"
-            className={`w-full px-4 py-2 bg-blue-600 text-white font-semibold rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-400`}
-            disabled={isLoading}>
-            {isLoading ? "Placing Bet..." : "Place Bet"}
-          </button>
-
-          {/* Error and Success Messages */}
-          {error && <p className="mt-4 text-red-500">{error}</p>}
-          {success && <p className="mt-4 text-green-500">{success}</p>}
+          <SubmitButtonComponent
+            isLoading={isLoading}
+            errorMessage={errorMessage}
+            successMessage={successMessage}
+            onSubmit={handleSubmit}
+          />
         </form>
       </div>
     </div>

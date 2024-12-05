@@ -1,159 +1,175 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
+
 import { useState, useEffect, useCallback } from "react";
 import { ethers } from "ethers";
 import tokenABI from "../abis/ERC20_ABI.json";
+import marketABI from "../abis/Polymarket_ABI.json";
 
-const TOKEN_CONTRACT_ADDRESS = "0x425eea9d65f20ce7FB56D810F8fD2697c717879a";
-const CONTRACT_ADDRESS = "0x939ea90d6A6DA8012B05e337aF6988030016fD22";
+const TOKEN_ADDRESS = "0x425eea9d65f20ce7FB56D810F8fD2697c717879a";
+const MARKET_ADDRESS = "0x939ea90d6A6DA8012B05e337aF6988030016fD22";
 
-// Set up the provider to connect to BSC Testnet
 const provider = new ethers.JsonRpcProvider(
   "https://bsc-testnet.infura.io/v3/2b3b923ad44a4738ba5aa8e2bb5f7463"
 );
-const signer = new ethers.Wallet(
+const walletSigner = new ethers.Wallet(
   "0361aff9a985da7779d8e7f00cd460ecb483d38f0abd44ad40ecc0bfb26268b3",
   provider
 );
 
-interface UseBet {
+interface UseBetHook {
   isLoading: boolean;
-  error: string;
-  success: string;
-  placeBetYes: (
+  errorMessage: string;
+  successMessage: string;
+  placeYesBet: (
     marketId: string,
     betAmount: string,
     userAddress: string
   ) => Promise<ethers.ContractTransaction | undefined>;
 }
 
-export const useBet = (): UseBet => {
+export const useBet = (): UseBetHook => {
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
 
-  // Initialize token contract with signer (ensure signer is available)
-  const tokenContract = signer
-    ? new ethers.Contract(TOKEN_CONTRACT_ADDRESS, tokenABI, signer)
+  const tokenContract = walletSigner
+    ? new ethers.Contract(TOKEN_ADDRESS, tokenABI, walletSigner)
     : null;
 
-  // Initialize Ethereum provider and signer
   useEffect(() => {
-    const initProvider = async () => {
+    const initializeProvider = async () => {
       if (!window.ethereum) {
-        setError(
-          "Ethereum provider not found. Install MetaMask or another wallet."
+        setErrorMessage(
+          "Ethereum provider not detected. Please install a wallet like MetaMask."
         );
         return;
       }
 
       try {
         await window.ethereum.request({ method: "eth_requestAccounts" });
-      } catch (err) {
-        console.error("Failed to initialize provider or signer:", err);
-        setError(
-          "Failed to connect to Ethereum wallet. Please check your wallet."
-        );
+      } catch (error) {
+        console.error("Error initializing Ethereum provider:", error);
+        setErrorMessage("Failed to connect to the Ethereum wallet.");
       }
     };
 
-    initProvider();
+    initializeProvider();
   }, []);
 
-  // Check and request token approval
-  const checkAndRequestApproval = useCallback(
-    async (userAddress: string, betAmount: string): Promise<boolean> => {
+  const validateAndRequestApproval = useCallback(
+    async (userAddress: string, amountInWei: bigint): Promise<boolean> => {
       if (!tokenContract) {
-        setError("Token contract is not initialized.");
+        setErrorMessage("Token contract is not initialized.");
         return false;
       }
 
       try {
-        const betAmountInWei = ethers.parseUnits(betAmount, "ether");
-
-        // Get current allowance
         const allowance = await tokenContract.allowance(
           userAddress,
-          CONTRACT_ADDRESS
+          MARKET_ADDRESS
         );
-        console.log("Allowance:", allowance.toString());
-        const balance = await tokenContract.balanceOf(userAddress);
         console.log(
-          `Balance of ${userAddress}:`,
-          ethers.formatUnits(balance, "ether")
+          `Current allowance for ${userAddress}: ${allowance.toString()}`
         );
 
-        // Check if allowance is sufficient
-        if (allowance >= betAmountInWei) {
+        const balance = await tokenContract.balanceOf(userAddress);
+        console.log(
+          `Token balance for ${userAddress}: ${ethers.formatUnits(
+            balance,
+            "ether"
+          )}`
+        );
+
+        if (allowance >= amountInWei) {
           return true;
         }
 
-        // Request token approval
-        setError("Requesting token approval...");
-        const tx = await tokenContract.approve(
-          CONTRACT_ADDRESS,
-          betAmountInWei
+        console.log("Requesting token approval...");
+        const approvalTransaction = await tokenContract.approve(
+          MARKET_ADDRESS,
+          amountInWei
         );
-        await tx.wait();
+        await approvalTransaction.wait();
 
-        // Verify updated allowance
         const updatedAllowance = await tokenContract.allowance(
           userAddress,
-          CONTRACT_ADDRESS
+          MARKET_ADDRESS
         );
-        return updatedAllowance >= betAmountInWei;
-      } catch (err: any) {
-        console.error("Error during approval process:", err);
-        setError("Unable to complete token approval. Please try again.");
+        return updatedAllowance >= amountInWei;
+      } catch (error: any) {
+        console.error("Approval process error:", error);
+        setErrorMessage(
+          `Failed to complete token approval. Reason: ${
+            error.message || "Unknown error"
+          }`
+        );
         return false;
       }
     },
     [tokenContract]
   );
 
-  // Place a bet
-  const placeBetYes = useCallback(
+  const placeYesBet: any = useCallback(
     async (marketId: string, betAmount: string, userAddress: string) => {
-      if (!signer) {
-        setError("Signer is not connected.");
+      if (!walletSigner) {
+        setErrorMessage("Signer is not configured properly.");
         return;
       }
 
       try {
         setIsLoading(true);
-        setError(""); // Reset any previous errors
-        setSuccess(""); // Reset previous success messages
+        setErrorMessage("");
+        setSuccessMessage("");
 
-        // Check if token approval is sufficient
-        const hasApproval = await checkAndRequestApproval(
+        const betAmountInWei = ethers.parseUnits(betAmount, "ether");
+
+        const approvalGranted = await validateAndRequestApproval(
           userAddress,
-          betAmount
+          betAmountInWei
         );
-        if (!hasApproval) {
-          setError("Token approval failed or insufficient allowance.");
+        if (!approvalGranted) {
+          setErrorMessage(
+            "Token approval failed or insufficient allowance. Cannot proceed with the bet."
+          );
           return;
         }
 
-        // Example placeholder for placing a bet; actual contract call would go here
-        // const marketContract = new ethers.Contract(MARKET_CONTRACT_ADDRESS, marketABI, signer);
-        // const tx = await marketContract.placeBetYes(marketId, betAmount);
-        // await tx.wait();
+        const marketContract = new ethers.Contract(
+          MARKET_ADDRESS,
+          marketABI,
+          walletSigner
+        );
 
-        setSuccess("Bet placed successfully!");
-      } catch (err: any) {
-        console.error("Error placing bet:", err);
-        setError("Failed to place bet: " + (err.message || "Unknown error"));
+        console.log("Placing bet...");
+        const transaction = await marketContract.addYesBet(
+          marketId,
+          betAmountInWei,
+          {
+            from: userAddress,
+          }
+        );
+        await transaction.wait();
+
+        console.log("Bet placed successfully.");
+        setSuccessMessage("Bet placed successfully!");
+      } catch (error: any) {
+        console.error("Error while placing bet:", error);
+        setErrorMessage(
+          `Failed to place bet. Reason: ${error.message || "Unknown error"}`
+        );
       } finally {
         setIsLoading(false);
       }
     },
-    [signer, checkAndRequestApproval]
+    [walletSigner, validateAndRequestApproval]
   );
 
   return {
     isLoading,
-    error,
-    success,
-    placeBetYes,
+    errorMessage,
+    successMessage,
+    placeYesBet,
   };
 };
