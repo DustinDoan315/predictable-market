@@ -332,13 +332,13 @@ export interface Polymarket extends BaseContract {
   addNoBet: TypedContractMethod<
     [_marketId: BigNumberish, _value: BigNumberish],
     [void],
-    "payable"
+    "nonpayable"
   >;
 
   addYesBet: TypedContractMethod<
     [_marketId: BigNumberish, _value: BigNumberish],
     [void],
-    "payable"
+    "nonpayable"
   >;
 
   allowance: TypedContractMethod<
@@ -465,14 +465,14 @@ export interface Polymarket extends BaseContract {
   ): TypedContractMethod<
     [_marketId: BigNumberish, _value: BigNumberish],
     [void],
-    "payable"
+    "nonpayable"
   >;
   getFunction(
     nameOrSignature: "addYesBet"
   ): TypedContractMethod<
     [_marketId: BigNumberish, _value: BigNumberish],
     [void],
-    "payable"
+    "nonpayable"
   >;
   getFunction(
     nameOrSignature: "allowance"

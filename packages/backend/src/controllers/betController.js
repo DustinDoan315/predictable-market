@@ -1,19 +1,20 @@
 const blockchainService = require("../services/blockchainService");
 
-async function placeBetYes(req, res) {
-  const { marketId, betAmount, userAddress } = req.body;
+async function placeBet(req, res) {
+  const { marketId, betAmount, userAddress, betType } = req.body;
 
   try {
+    const parseBetAmount = BigInt(betAmount) * 10n ** 18n;
     const allowance = await blockchainService.checkAllowance(userAddress);
-
-    if (allowance < betAmount) {
-      await blockchainService.approveTokens(userAddress, betAmount);
+    if (allowance < parseBetAmount) {
+      await blockchainService.approveTokens(userAddress, parseBetAmount);
     }
 
-    const tx = await blockchainService.placeBetYes(
+    const tx = await blockchainService.placeBet(
       marketId,
-      betAmount,
-      userAddress
+      parseBetAmount,
+      userAddress,
+      betType
     );
 
     res.status(200).json({ success: true, transaction: tx });
@@ -23,4 +24,4 @@ async function placeBetYes(req, res) {
   }
 }
 
-module.exports = { placeBetYes };
+module.exports = { placeBet };

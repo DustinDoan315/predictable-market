@@ -7,14 +7,15 @@ import SubmitButtonComponent from "./SubmitButtonComponent";
 const BetForm: React.FC = () => {
   const [marketId, setMarketId] = useState<string>("");
   const [betAmount, setBetAmount] = useState<string>("");
+  const [betType, setBetType] = useState<boolean>(true);
   const [userAddress, setUserAddress] = useState<string>("");
 
-  const { isLoading, errorMessage, successMessage, placeYesBet } = useBet();
+  const { isLoading, errorMessage, successMessage, placeBet } = useBet();
 
   const handleSubmit = async () => {
     try {
       console.log("closePopup called");
-      await placeYesBet(marketId, betAmount, userAddress);
+      await placeBet(marketId, betAmount, userAddress, betType);
     } catch (err) {
       console.error("Error placing bet:", err);
     }
@@ -91,6 +92,41 @@ const BetForm: React.FC = () => {
               placeholder="Enter Your Wallet Address"
               required
             />
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700">
+              Bet Type
+            </label>
+            <div className="mt-1 flex items-center space-x-4">
+              {/* Yes Checkbox */}
+              <label className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  id="betTypeYes"
+                  name="betType"
+                  value="Yes"
+                  checked={betType === true}
+                  onChange={() => setBetType(true)}
+                  className="focus:ring-indigo-500 focus:border-indigo-500 text-indigo-600 border-gray-300 rounded"
+                />
+                <span className="text-green-500 font-semibold">Yes</span>
+              </label>
+
+              {/* No Checkbox */}
+              <label className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  id="betTypeNo"
+                  name="betType"
+                  value="No"
+                  checked={betType === false}
+                  onChange={() => setBetType(false)}
+                  className="focus:ring-indigo-500 focus:border-indigo-500 text-indigo-600 border-gray-300 rounded"
+                />
+                <span className="text-red-500 font-semibold">No</span>
+              </label>
+            </div>
           </div>
 
           {/* Submit Button */}

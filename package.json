@@ -1,0 +1,12 @@
+{
+  "name": "predictable-market-app",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "keywords": [],
+  "author": "Dustin315",
+  "license": "ISC",
+  "description": "Predictable market app"
+}

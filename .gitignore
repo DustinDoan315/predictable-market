@@ -1,0 +1,6 @@
+node_modules
+packages/mobileapp/node_modules
+packages/web-app/node_modules
+packages/smart-contract/cache
+packages/smart-contract/artifacts
+.yarn

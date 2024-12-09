@@ -42,9 +42,9 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IERC20__factory>;
     getContractFactory(
-      name: "Polymarket",
+      name: "BetMarket",
       signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.Polymarket__factory>;
+    ): Promise<Contracts.BetMarket__factory>;
 
     getContractAt(
       name: "Ownable",
@@ -82,10 +82,10 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.IERC20>;
     getContractAt(
-      name: "Polymarket",
+      name: "BetMarket",
       address: string | ethers.Addressable,
       signer?: ethers.Signer
-    ): Promise<Contracts.Polymarket>;
+    ): Promise<Contracts.BetMarket>;
 
     deployContract(
       name: "Ownable",
@@ -116,9 +116,9 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.IERC20>;
     deployContract(
-      name: "Polymarket",
+      name: "BetMarket",
       signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.Polymarket>;
+    ): Promise<Contracts.BetMarket>;
 
     deployContract(
       name: "Ownable",
@@ -156,10 +156,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.IERC20>;
     deployContract(
-      name: "Polymarket",
+      name: "BetMarket",
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.Polymarket>;
+    ): Promise<Contracts.BetMarket>;
 
     // default types
     getContractFactory(
