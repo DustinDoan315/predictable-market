@@ -4,3 +4,6 @@ packages/web-app/node_modules
 packages/smart-contract/cache
 packages/smart-contract/artifacts
 .yarn
+packages/smart-contract/.env
+packages/smart-contract/.env.local
+packages/smart-contract/.env.testnet

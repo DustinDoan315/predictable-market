@@ -9503,6 +9503,8 @@ __metadata:
 "predictable-market-app@workspace:.":
   version: 0.0.0-use.local
   resolution: "predictable-market-app@workspace:."
+  dependencies:
+    "@openzeppelin/contracts": ^5.1.0
   languageName: unknown
   linkType: soft
 

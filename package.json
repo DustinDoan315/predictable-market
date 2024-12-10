@@ -8,5 +8,8 @@
   "keywords": [],
   "author": "Dustin315",
   "license": "ISC",
-  "description": "Predictable market app"
+  "description": "Predictable market app",
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.1.0"
+  }
 }
