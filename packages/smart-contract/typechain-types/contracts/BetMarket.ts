@@ -77,7 +77,7 @@ export interface BetMarketInterface extends Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "createMarket",
-    values: [string, string, string, string, BigNumberish]
+    values: [BigNumberish]
   ): string;
   encodeFunctionData(functionFragment: "decimals", values?: undefined): string;
   encodeFunctionData(
@@ -216,24 +216,14 @@ export namespace MarketClosedEvent {
 export namespace MarketCreatedEvent {
   export type InputTuple = [
     id: BigNumberish,
-    market: string,
     timestamp: BigNumberish,
-    createdBy: AddressLike,
-    creatorImageHash: string
+    createdBy: AddressLike
   ];
-  export type OutputTuple = [
-    id: bigint,
-    market: string,
-    timestamp: bigint,
-    createdBy: string,
-    creatorImageHash: string
-  ];
+  export type OutputTuple = [id: bigint, timestamp: bigint, createdBy: string];
   export interface OutputObject {
     id: bigint;
-    market: string;
     timestamp: bigint;
     createdBy: string;
-    creatorImageHash: string;
   }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
   export type Filter = TypedDeferredTopicFilter<Event>;
@@ -361,13 +351,7 @@ export interface BetMarket extends BaseContract {
   >;
 
   createMarket: TypedContractMethod<
-    [
-      _market: string,
-      _creatorImageHash: string,
-      _description: string,
-      _resolverUrl: string,
-      _endTimestamp: BigNumberish
-    ],
+    [_endTimestamp: BigNumberish],
     [void],
     "nonpayable"
   >;
@@ -376,36 +360,24 @@ export interface BetMarket extends BaseContract {
 
   getMarketData: TypedContractMethod<
     [_marketId: BigNumberish],
-    [[string, bigint, bigint, bigint, bigint, boolean]],
+    [
+      [bigint, bigint, bigint, bigint, boolean] & {
+        id: bigint;
+        totalYesAmount: bigint;
+        totalNoAmount: bigint;
+        endTimestamp: bigint;
+        eventCompleted: boolean;
+      }
+    ],
     "view"
   >;
 
   markets: TypedContractMethod<
     [arg0: BigNumberish],
     [
-      [
-        bigint,
-        string,
-        bigint,
-        bigint,
-        string,
-        string,
-        string,
-        string,
-        bigint,
-        bigint,
-        bigint,
-        boolean
-      ] & {
+      [bigint, bigint, bigint, bigint, boolean] & {
         id: bigint;
-        market: string;
-        timestamp: bigint;
         endTimestamp: bigint;
-        createdBy: string;
-        creatorImageHash: string;
-        description: string;
-        resolverUrl: string;
-        totalAmount: bigint;
         totalYesAmount: bigint;
         totalNoAmount: bigint;
         eventCompleted: boolean;
@@ -486,17 +458,7 @@ export interface BetMarket extends BaseContract {
   >;
   getFunction(
     nameOrSignature: "createMarket"
-  ): TypedContractMethod<
-    [
-      _market: string,
-      _creatorImageHash: string,
-      _description: string,
-      _resolverUrl: string,
-      _endTimestamp: BigNumberish
-    ],
-    [void],
-    "nonpayable"
-  >;
+  ): TypedContractMethod<[_endTimestamp: BigNumberish], [void], "nonpayable">;
   getFunction(
     nameOrSignature: "decimals"
   ): TypedContractMethod<[], [bigint], "view">;
@@ -504,7 +466,15 @@ export interface BetMarket extends BaseContract {
     nameOrSignature: "getMarketData"
   ): TypedContractMethod<
     [_marketId: BigNumberish],
-    [[string, bigint, bigint, bigint, bigint, boolean]],
+    [
+      [bigint, bigint, bigint, bigint, boolean] & {
+        id: bigint;
+        totalYesAmount: bigint;
+        totalNoAmount: bigint;
+        endTimestamp: bigint;
+        eventCompleted: boolean;
+      }
+    ],
     "view"
   >;
   getFunction(
@@ -512,29 +482,9 @@ export interface BetMarket extends BaseContract {
   ): TypedContractMethod<
     [arg0: BigNumberish],
     [
-      [
-        bigint,
-        string,
-        bigint,
-        bigint,
-        string,
-        string,
-        string,
-        string,
-        bigint,
-        bigint,
-        bigint,
-        boolean
-      ] & {
+      [bigint, bigint, bigint, bigint, boolean] & {
         id: bigint;
-        market: string;
-        timestamp: bigint;
         endTimestamp: bigint;
-        createdBy: string;
-        creatorImageHash: string;
-        description: string;
-        resolverUrl: string;
-        totalAmount: bigint;
         totalYesAmount: bigint;
         totalNoAmount: bigint;
         eventCompleted: boolean;
@@ -660,7 +610,7 @@ export interface BetMarket extends BaseContract {
       MarketClosedEvent.OutputObject
     >;
 
-    "MarketCreated(uint256,string,uint256,address,string)": TypedContractEvent<
+    "MarketCreated(uint256,uint256,address)": TypedContractEvent<
       MarketCreatedEvent.InputTuple,
       MarketCreatedEvent.OutputTuple,
       MarketCreatedEvent.OutputObject

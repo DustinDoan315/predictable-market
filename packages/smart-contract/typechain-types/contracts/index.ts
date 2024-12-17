@@ -2,3 +2,4 @@
 /* tslint:disable */
 /* eslint-disable */
 export type { BetMarket } from "./BetMarket";
+export type { MockERC20 } from "./MockERC20";

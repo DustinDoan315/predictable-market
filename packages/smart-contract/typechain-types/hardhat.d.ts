@@ -45,6 +45,10 @@ declare module "hardhat/types/runtime" {
       name: "BetMarket",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.BetMarket__factory>;
+    getContractFactory(
+      name: "MockERC20",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.MockERC20__factory>;
 
     getContractAt(
       name: "Ownable",
@@ -86,6 +90,11 @@ declare module "hardhat/types/runtime" {
       address: string | ethers.Addressable,
       signer?: ethers.Signer
     ): Promise<Contracts.BetMarket>;
+    getContractAt(
+      name: "MockERC20",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.MockERC20>;
 
     deployContract(
       name: "Ownable",
@@ -119,6 +128,10 @@ declare module "hardhat/types/runtime" {
       name: "BetMarket",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.BetMarket>;
+    deployContract(
+      name: "MockERC20",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.MockERC20>;
 
     deployContract(
       name: "Ownable",
@@ -160,6 +173,11 @@ declare module "hardhat/types/runtime" {
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.BetMarket>;
+    deployContract(
+      name: "MockERC20",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.MockERC20>;
 
     // default types
     getContractFactory(

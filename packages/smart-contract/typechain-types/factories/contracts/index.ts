@@ -2,3 +2,4 @@
 /* tslint:disable */
 /* eslint-disable */
 export { BetMarket__factory } from "./BetMarket__factory";
+export { MockERC20__factory } from "./MockERC20__factory";

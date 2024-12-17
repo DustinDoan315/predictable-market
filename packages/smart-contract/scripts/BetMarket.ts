@@ -14,9 +14,10 @@ async function main() {
 
   const contractFactory = await ethers.getContractFactory(contractName);
 
+  const adminAddress = "0xbB66BcBcE152273DF812bd988405168ADB889285";
   const tokenAddress = "0x425eea9d65f20ce7FB56D810F8fD2697c717879a";
 
-  const contract = await contractFactory.deploy(tokenAddress, {
+  const contract = await contractFactory.deploy(adminAddress, tokenAddress, {
     gasLimit: "0x1000000",
   });
   saveFrontendFiles(contract, contractName);
