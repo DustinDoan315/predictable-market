@@ -2,21 +2,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { ethers } from "ethers";
 import tokenABI from "../abis/ERC20_ABI.json";
 import marketABI from "../abis/BetMarket_ABI.json";
 
 const TOKEN_ADDRESS = "0x425eea9d65f20ce7FB56D810F8fD2697c717879a";
 const MARKET_ADDRESS = "0x1cabb976574b79e8E54e0c431fD8D882604CC480";
-
-const provider = new ethers.JsonRpcProvider(
-  "https://bsc-testnet.infura.io/v3/2b3b923ad44a4738ba5aa8e2bb5f7463"
-);
-const walletSigner = new ethers.Wallet(
-  "0361aff9a985da7779d8e7f00cd460ecb483d38f0abd44ad40ecc0bfb26268b3",
-  provider
-);
 
 interface UseBetHook {
   isLoading: boolean;
@@ -25,7 +17,6 @@ interface UseBetHook {
   placeBet: (
     marketId: string,
     betAmount: string,
-    userAddress: string,
     betType: boolean
   ) => Promise<ethers.ContractTransaction | undefined>;
 }
@@ -35,47 +26,50 @@ export const useBet = (): UseBetHook => {
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
 
-  const tokenContract = walletSigner
-    ? new ethers.Contract(TOKEN_ADDRESS, tokenABI, walletSigner)
-    : null;
+  const initializeProvider = useCallback(async () => {
+    if (!window.ethereum) {
+      setErrorMessage(
+        "Ethereum provider not detected. Please install a wallet like MetaMask."
+      );
+      return null;
+    }
 
-  useEffect(() => {
-    const initializeProvider = async () => {
-      if (!window.ethereum) {
-        setErrorMessage(
-          "Ethereum provider not detected. Please install a wallet like MetaMask."
-        );
-        return;
-      }
-
-      try {
-        await window.ethereum.request({ method: "eth_requestAccounts" });
-      } catch (error) {
-        console.error("Error initializing Ethereum provider:", error);
-        setErrorMessage("Failed to connect to the Ethereum wallet.");
-      }
-    };
-
-    initializeProvider();
+    try {
+      await window.ethereum.request({ method: "eth_requestAccounts" });
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      return provider;
+    } catch (error) {
+      console.error("Error initializing Ethereum provider:", error);
+      setErrorMessage("Failed to connect to the Ethereum wallet.");
+      return null;
+    }
   }, []);
 
   const validateAndRequestApproval = useCallback(
-    async (userAddress: string, betAmount: string): Promise<boolean> => {
-      if (!tokenContract) {
-        setErrorMessage("Token contract is not initialized.");
-        return false;
-      }
+    async (
+      provider: ethers.BrowserProvider,
+      betAmount: string
+    ): Promise<boolean> => {
+      const signer = await provider.getSigner();
+      const tokenContract = new ethers.Contract(
+        TOKEN_ADDRESS,
+        tokenABI,
+        signer
+      );
+      const userAddress = await signer.getAddress();
 
       try {
         const betAmountInWei = ethers.parseUnits(betAmount, "ether");
-
-        const allowance = await tokenContract.allowance(
+        const allowance: bigint = await tokenContract.allowance(
           userAddress,
           MARKET_ADDRESS
         );
         const balance = await tokenContract.balanceOf(userAddress);
+
         console.log(
-          `Current allowance for ${userAddress}: ${allowance.toString()}`
+          `Current allowance for ${userAddress}: ${ethers.formatUnits(
+            allowance
+          )}`
         );
         console.log(
           `Token balance for ${userAddress}: ${ethers.formatUnits(
@@ -95,7 +89,7 @@ export const useBet = (): UseBetHook => {
         );
         await approvalTransaction.wait();
 
-        const updatedAllowance = await tokenContract.allowance(
+        const updatedAllowance: bigint = await tokenContract.allowance(
           userAddress,
           MARKET_ADDRESS
         );
@@ -110,20 +104,21 @@ export const useBet = (): UseBetHook => {
         return false;
       }
     },
-    [tokenContract]
+    []
   );
 
   const placeBet: any = useCallback(
-    async (
-      marketId: string,
-      betAmount: string,
-      userAddress: string,
-      betType: boolean
-    ) => {
-      if (!walletSigner) {
-        setErrorMessage("Signer is not configured properly.");
-        return;
-      }
+    async (marketId: string, betAmount: string, betType: boolean) => {
+      const provider = await initializeProvider();
+      if (!provider) return;
+
+      const signer = await provider.getSigner();
+      const userAddress = await signer.getAddress();
+      const marketContract = new ethers.Contract(
+        MARKET_ADDRESS,
+        marketABI,
+        signer
+      );
 
       try {
         setIsLoading(true);
@@ -131,7 +126,7 @@ export const useBet = (): UseBetHook => {
         setSuccessMessage("");
 
         const approvalGranted = await validateAndRequestApproval(
-          userAddress,
+          provider,
           betAmount
         );
         if (!approvalGranted) {
@@ -141,19 +136,14 @@ export const useBet = (): UseBetHook => {
           return;
         }
 
-        const marketContract = new ethers.Contract(
-          MARKET_ADDRESS,
-          marketABI,
-          walletSigner
-        );
-
         console.log("Placing bet...");
         const betAmountInWei = ethers.parseUnits(betAmount, "ether");
+        console.log("---userAddress---", userAddress);
 
         const transaction = await marketContract.placeBet(
           marketId,
-          betAmountInWei,
           betType,
+          betAmountInWei,
           {
             from: userAddress,
           }
@@ -171,7 +161,7 @@ export const useBet = (): UseBetHook => {
         setIsLoading(false);
       }
     },
-    [walletSigner, validateAndRequestApproval]
+    [initializeProvider, validateAndRequestApproval]
   );
 
   return {

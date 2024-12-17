@@ -7,3 +7,8 @@ packages/smart-contract/artifacts
 packages/smart-contract/.env
 packages/smart-contract/.env.local
 packages/smart-contract/.env.testnet
+packages/web-app/next-env.d.ts
+
+//interface Window {
+    ethereum: any
+}

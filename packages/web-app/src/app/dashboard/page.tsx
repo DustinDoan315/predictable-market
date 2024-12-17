@@ -1,5 +1,3 @@
-"use client";
-
 // import WalletSummary from "@/components/WalletSummary";
 // import Transactions from "@/components/Transactions";
 // import NetworkSwitcher from "@/components/NetworkSwitcher";
@@ -8,14 +6,6 @@
 import BetForm from "@/components/BetForm";
 
 export default function DashboardPage() {
-  // const handleBetYes = (id: number) => {
-  //   console.log(`Bet Yes on item ${id}`);
-  // };
-
-  // const handleBetNo = (id: number) => {
-  //   console.log(`Bet No on item ${id}`);
-  // };
-
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
       <BetForm />

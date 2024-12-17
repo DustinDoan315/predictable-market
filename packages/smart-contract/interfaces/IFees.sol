@@ -4,11 +4,10 @@ pragma solidity <0.9.0;
 interface IFeesEE {
     error FeeTooHigh();
 
+    /// @notice Emitted when a fee is charged
     event FeeCharged(address indexed receiver, uint256 tokenId, uint256 amount);
 }
 
 abstract contract IFees is IFeesEE {
-    function getFee() public virtual returns (uint256);
-
-    function setFee(uint256) external virtual;
+    function getMaxFeeRate() public pure virtual returns (uint256);
 }

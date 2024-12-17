@@ -4,18 +4,64 @@ import { useState } from "react";
 import { useBet } from "@/hooks/useBet";
 import SubmitButtonComponent from "./SubmitButtonComponent";
 
+const InputField: React.FC<{
+  id: string;
+  label: string;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  placeholder: string;
+  required?: boolean;
+  type?: string;
+}> = ({
+  id,
+  label,
+  value,
+  onChange,
+  placeholder,
+  required = false,
+  type = "text",
+}) => (
+  <div className="mb-4">
+    <label htmlFor={id} className="block text-sm font-medium text-gray-700">
+      {label}
+    </label>
+    <input
+      type={type}
+      id={id}
+      value={value}
+      onChange={onChange}
+      className="mt-1 px-4 py-2 w-full border rounded-md focus:ring-indigo-500 focus:border-indigo-500 text-black"
+      placeholder={placeholder}
+      required={required}
+    />
+  </div>
+);
+
 const BetForm: React.FC = () => {
   const [marketId, setMarketId] = useState<string>("");
   const [betAmount, setBetAmount] = useState<string>("");
   const [betType, setBetType] = useState<boolean>(true);
-  const [userAddress, setUserAddress] = useState<string>("");
 
   const { isLoading, errorMessage, successMessage, placeBet } = useBet();
 
+  const connectWallet = async () => {
+    if (typeof window.ethereum !== "undefined") {
+      try {
+        await window.ethereum.request({ method: "eth_requestAccounts" });
+      } catch (error) {
+        console.error("Failed to connect wallet:", error);
+      }
+    } else {
+      alert(
+        "MetaMask is not installed. Please install MetaMask to use this feature."
+      );
+    }
+  };
+
   const handleSubmit = async () => {
     try {
-      console.log("closePopup called");
-      await placeBet(marketId, betAmount, userAddress, betType);
+      await connectWallet();
+      await placeBet(marketId, betAmount, betType);
     } catch (err) {
       console.error("Error placing bet:", err);
     }
@@ -23,13 +69,11 @@ const BetForm: React.FC = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-
     if (value === "" || isNaN(Number(value))) {
       setBetAmount("");
-      return;
+    } else {
+      setBetAmount(value);
     }
-
-    setBetAmount(value);
   };
 
   return (
@@ -40,66 +84,29 @@ const BetForm: React.FC = () => {
         </h1>
 
         <form className="mt-4">
-          {/* Market ID */}
-          <div className="mb-4">
-            <label
-              htmlFor="marketId"
-              className="block text-sm font-medium text-gray-700">
-              Market ID
-            </label>
-            <input
-              type="text"
-              id="marketId"
-              value={marketId}
-              onChange={(e) => setMarketId(e.target.value)}
-              className="mt-1 px-4 py-2 w-full border rounded-md focus:ring-indigo-500 focus:border-indigo-500 text-black"
-              placeholder="Enter Market ID"
-              required
-            />
-          </div>
-
-          {/* Bet Amount */}
-          <div className="mb-4">
-            <label
-              htmlFor="betAmount"
-              className="block text-sm font-medium text-gray-700">
-              Bet Amount (ETH)
-            </label>
-            <input
-              type="number"
-              id="betAmount"
-              value={betAmount || ""}
-              onChange={handleChange}
-              className="mt-1 px-4 py-2 w-full border rounded-md focus:ring-indigo-500 focus:border-indigo-500 text-black"
-              placeholder="Enter Bet Amount"
-              required
-            />
-          </div>
-
-          {/* User Address */}
-          <div className="mb-4">
-            <label
-              htmlFor="userAddress"
-              className="block text-sm font-medium text-gray-700">
-              Your Wallet Address
-            </label>
-            <input
-              type="text"
-              id="userAddress"
-              value={userAddress}
-              onChange={(e) => setUserAddress(e.target.value)}
-              className="mt-1 px-4 py-2 w-full border rounded-md focus:ring-indigo-500 focus:border-indigo-500 text-black"
-              placeholder="Enter Your Wallet Address"
-              required
-            />
-          </div>
+          <InputField
+            id="marketId"
+            label="Market ID"
+            value={marketId}
+            onChange={(e) => setMarketId(e.target.value)}
+            placeholder="Enter Market ID"
+            required
+          />
+          <InputField
+            id="betAmount"
+            label="Bet Amount (ETH)"
+            value={betAmount || ""}
+            onChange={handleChange}
+            placeholder="Enter Bet Amount"
+            required
+            type="number"
+          />
 
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700">
               Bet Type
             </label>
             <div className="mt-1 flex items-center space-x-4">
-              {/* Yes Checkbox */}
               <label className="flex items-center space-x-2">
                 <input
                   type="checkbox"
@@ -112,8 +119,6 @@ const BetForm: React.FC = () => {
                 />
                 <span className="text-green-500 font-semibold">Yes</span>
               </label>
-
-              {/* No Checkbox */}
               <label className="flex items-center space-x-2">
                 <input
                   type="checkbox"
@@ -129,7 +134,6 @@ const BetForm: React.FC = () => {
             </div>
           </div>
 
-          {/* Submit Button */}
           <SubmitButtonComponent
             isLoading={isLoading}
             errorMessage={errorMessage}

@@ -4,6 +4,8 @@ pragma solidity ^0.8.27;
 import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
+import {Market} from "../libraries/MarketStruct.sol";
+
 contract BetMarket is ERC20, Ownable {
     address public polyToken;
     uint256 public totalMarkets;
@@ -11,24 +13,6 @@ contract BetMarket is ERC20, Ownable {
     struct AmountAdded {
         address user;
         uint256 amount;
-    }
-
-    struct Market {
-        uint256 id;
-        string market;
-        uint256 timestamp;
-        uint256 endTimestamp;
-        address createdBy;
-        string creatorImageHash;
-        string description;
-        string resolverUrl;
-        uint256 totalAmount;
-        uint256 totalYesAmount;
-        uint256 totalNoAmount;
-        bool eventCompleted;
-        mapping(address => uint256) userBets;
-        AmountAdded[] yesBets;
-        AmountAdded[] noBets;
     }
 
     mapping(uint256 => Market) public markets;

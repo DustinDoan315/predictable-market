@@ -2,26 +2,6 @@
 pragma solidity ^0.8.27;
 
 interface IBetMarket {
-    struct AmountAdded {
-        address user;
-        uint256 amount;
-    }
-
-    struct Market {
-        uint256 id;
-        string market;
-        uint256 timestamp;
-        uint256 endTimestamp;
-        address createdBy;
-        string creatorImageHash;
-        string description;
-        string resolverUrl;
-        uint256 totalAmount;
-        uint256 totalYesAmount;
-        uint256 totalNoAmount;
-        bool eventCompleted;
-    }
-
     function createMarket(
         string memory _market,
         string memory _creatorImageHash,
